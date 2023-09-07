@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 export default function Welcome() {
   const navigate = useNavigate();
   const a = JSON.parse(localStorage.getItem('userData'));
-  console.log(a);
+  //  console.log(a);
   React.useEffect(() => {
     if (!a) {
       navigate('/');

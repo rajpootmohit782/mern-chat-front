@@ -2,12 +2,51 @@ import React from 'react';
 import './myStyles.css';
 import SearchIcon from '@mui/icons-material/Search';
 import { IconButton } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 export default function OnlineUsers() {
+  const [data, setData] = React.useState([]);
+  const [shouldFetch, setShouldFetch] = React.useState(true);
+
+  const navigate = useNavigate();
+  const a = JSON.parse(localStorage.getItem('userData'));
+  console.log(a._id);
+  React.useEffect(() => {
+    if (!a) {
+      navigate('/');
+    }
+  });
+
+  React.useEffect(() => {
+    const config = {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${a.token}`,
+      },
+    };
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          'https://9mv3cy-5000.csb.app/user/chat',
+          { userId: a._id },
+          config
+        );
+        const resData = await response.json();
+        console.log('data is', resData);
+        setData(resData);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchData();
+  }, []);
+  const updatedData = data.filter((item) => item._id !== a._id);
+  console.log('updated', updatedData);
+
   return (
     <div className="list-container">
       <div className="ug-header">
-        <p>Online Users</p>
+        <p>All Users</p>
       </div>
       <div className="sb-search">
         <IconButton>
@@ -16,42 +55,12 @@ export default function OnlineUsers() {
         <input placeholder="search" className="search-box" />
       </div>
       <div className="ug-list">
-        <div className="list-tem">
-          <p className="con-icon">T</p>
-          <p className="con-title">Test_user</p>
-        </div>
-        <div className="list-tem">
-          <p className="con-icon">T</p>
-          <p className="con-title">Test_user</p>
-        </div>
-        <div className="list-tem">
-          <p className="con-icon">T</p>
-          <p className="con-title">Test_user</p>
-        </div>
-        <div className="list-tem">
-          <p className="con-icon">T</p>
-          <p className="con-title">Test_user</p>
-        </div>
-        <div className="list-tem">
-          <p className="con-icon">T</p>
-          <p className="con-title">Test_user</p>
-        </div>
-        <div className="list-tem">
-          <p className="con-icon">T</p>
-          <p className="con-title">Test_user</p>
-        </div>
-        <div className="list-tem">
-          <p className="con-icon">T</p>
-          <p className="con-title">Test_user</p>
-        </div>
-        <div className="list-tem">
-          <p className="con-icon">T</p>
-          <p className="con-title">Test_user</p>
-        </div>
-        <div className="list-tem">
-          <p className="con-icon">T</p>
-          <p className="con-title">Test_user</p>
-        </div>
+        {updatedData.map((user) => (
+          <div className="list-tem" key={user._id}>
+            <p className="con-icon">{user.Name[0]}</p>
+            <p className="con-title">{user.Name}</p>
+          </div>
+        ))}
       </div>
     </div>
   );
