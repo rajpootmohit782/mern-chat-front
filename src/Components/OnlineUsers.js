@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 export default function OnlineUsers() {
   const [data, setData] = React.useState([]);
   const [shouldFetch, setShouldFetch] = React.useState(true);
+  const [conversation, setConversation] = React.useState([]);
 
   const navigate = useNavigate();
   const a = JSON.parse(localStorage.getItem('userData'));
@@ -56,7 +57,22 @@ export default function OnlineUsers() {
       </div>
       <div className="ug-list">
         {updatedData.map((user) => (
-          <div className="list-tem" key={user._id}>
+          <div
+            className="list-tem"
+            key={user._id}
+            onClick={async () => {
+              const res = await fetch(`https://9mv3cy-5000.csb.app/chat/m`, {
+                method: 'POST',
+                headers: {
+                  Authorization: `Bearer ${a.token}`,
+                  'Content-Type': 'application/json', // Specify the content type if needed
+                },
+                body: JSON.stringify({ userId: user._id }), // Convert the data to JSON format
+              });
+              const resData = await res.json();
+              setConversation(resData);
+            }}
+          >
             <p className="con-icon">{user.Name[0]}</p>
             <p className="con-title">{user.Name}</p>
           </div>
