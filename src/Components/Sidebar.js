@@ -12,25 +12,73 @@ import { IconButton } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 export default function Sidebar() {
+  const a = JSON.parse(localStorage.getItem('userData'));
   const [lightMode, setLightMode] = React.useState(true);
-  const [conversation, setConversation] = React.useState([
-    {
-      name: 'John Doe',
-      lastMessage: 'Hello!123456789',
-      timeStamp: '10:00',
-    },
-    {
-      name: 'heer',
-      lastMessage: 'Hello!ddd',
-      timeStamp: '10:00',
-    },
-    {
-      name: 'Roby',
-      lastMessage: 'Helloyes!',
-      timeStamp: '10:00',
-    },
-  ]);
+  const [conversation, setConversation] = React.useState([{}]);
+  const match = [];
   const navigate = useNavigate();
+  var userId = a._id;
+  React.useEffect(() => {
+    console.log('ans', userId);
+    const config = {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${a.token}`,
+        'Content-Type': 'application/json',
+        'X-User-ID': userId, // Custom header to pass userId
+      },
+    };
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          'https://9mv3cy-5000.csb.app/chat/fetch',
+          config
+        );
+        const resData = await response.json();
+        console.log('data is', resData);
+        setConversation(resData);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchData();
+  }, [a._id]);
+
+  console.log('d', conversation);
+  // ...
+  // Your existing code
+  // ...
+  // Your existing code
+
+  if (conversation.length > 0) {
+    // Accessing the users array within the conversation objects using map
+    const usersArraysInConversations = conversation.map(
+      (conversationItem) => conversationItem.users
+    );
+
+    console.log('Users arrays in conversations:', usersArraysInConversations);
+
+    // Find the user whose _id matches a._id
+    let matchedUser = null;
+
+    usersArraysInConversations.map((usersArray) => {
+      console.log(usersArray);
+      if (Array.isArray(usersArray)) {
+        const user = usersArray.find((user) => user._id != a._id);
+        if (user) {
+          matchedUser = user;
+          // Exit the loop if a match is found
+          console.log('Matched User:', matchedUser);
+          match.push(matchedUser);
+        }
+      }
+    });
+
+    console.log('match', match);
+    // console.log('Matched User:', matchedUser);
+
+    // Your JSX code for rendering the Sidebar
+  }
 
   return (
     <div className="sidebar-container">
@@ -74,7 +122,7 @@ export default function Sidebar() {
         />
       </div>
       <div className={'sb-conversation' + (!lightMode ? ' dark' : '')}>
-        {conversation.map((conversation) => (
+        {match.map((conversation) => (
           <ConversationsItem props={conversation} key={conversation.name} />
         ))}
       </div>

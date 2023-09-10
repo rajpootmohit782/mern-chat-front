@@ -67,7 +67,7 @@ export default function OnlineUsers() {
                   Authorization: `Bearer ${a.token}`,
                   'Content-Type': 'application/json', // Specify the content type if needed
                 },
-                body: JSON.stringify({ userId: user._id }), // Convert the data to JSON format
+                body: JSON.stringify({ userId: user._id, chatId: a._id }), // Convert the data to JSON format
               });
               const resData = await res.json();
               setConversation(resData);
