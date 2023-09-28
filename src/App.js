@@ -20,7 +20,7 @@ export default function App() {
           <Route path="/" element={<Login />} />
           <Route path="app" element={<MainContainer />}>
             <Route path="welcome" element={<Welcome />}></Route>
-            <Route path="chat" element={<ChatArea />}></Route>
+            <Route path="chat/:id" element={<ChatArea />}></Route>
             <Route path="users" element={<OnlineUsers />}></Route>
             <Route path="groups" element={<AllGroups />}></Route>
             <Route path="create-groups" element={<CreateGroups />}></Route>

@@ -14,7 +14,7 @@ import { useNavigate } from 'react-router-dom';
 export default function Sidebar() {
   const a = JSON.parse(localStorage.getItem('userData'));
   const [lightMode, setLightMode] = React.useState(true);
-  const [conversation, setConversation] = React.useState([{}]);
+  const [conversations, setConversation] = React.useState([]);
   const match = [];
   const navigate = useNavigate();
   var userId = a._id;
@@ -44,41 +44,41 @@ export default function Sidebar() {
     fetchData();
   }, [a._id]);
 
-  console.log('d', conversation);
+  // console.log('d', conversations);
   // ...
   // Your existing code
   // ...
   // Your existing code
 
-  if (conversation.length > 0) {
-    // Accessing the users array within the conversation objects using map
-    const usersArraysInConversations = conversation.map(
-      (conversationItem) => conversationItem.users
-    );
+  // if (conversation.length > 0) {
+  //   // Accessing the users array within the conversation objects using map
+  //   const usersArraysInConversations = conversation.map(
+  //     (conversationItem) => conversationItem.users
+  //   );
 
-    console.log('Users arrays in conversations:', usersArraysInConversations);
+  //   console.log('Users arrays in conversations:', usersArraysInConversations);
 
-    // Find the user whose _id matches a._id
-    let matchedUser = null;
+  //   // Find the user whose _id matches a._id
+  //   let matchedUser = null;
 
-    usersArraysInConversations.map((usersArray) => {
-      console.log(usersArray);
-      if (Array.isArray(usersArray)) {
-        const user = usersArray.find((user) => user._id != a._id);
-        if (user) {
-          matchedUser = user;
-          // Exit the loop if a match is found
-          console.log('Matched User:', matchedUser);
-          match.push(matchedUser);
-        }
-      }
-    });
+  //   usersArraysInConversations.map((usersArray) => {
+  //     console.log(usersArray);
+  //     if (Array.isArray(usersArray)) {
+  //       const user = usersArray.find((user) => user._id != a._id);
+  //       if (user) {
+  //         matchedUser = user;
+  //         // Exit the loop if a match is found
+  //         console.log('Matched User:', matchedUser);
+  //         match.push(matchedUser);
+  //       }
+  //     }
+  //   });
 
-    console.log('match', match);
-    // console.log('Matched User:', matchedUser);
+  //  console.log('match', match);
+  // console.log('Matched User:', matchedUser);
 
-    // Your JSX code for rendering the Sidebar
-  }
+  // Your JSX code for rendering the Sidebar
+  // }
 
   return (
     <div className="sidebar-container">
@@ -122,9 +122,84 @@ export default function Sidebar() {
         />
       </div>
       <div className={'sb-conversation' + (!lightMode ? ' dark' : '')}>
-        {match.map((conversation) => (
-          <ConversationsItem props={conversation} key={conversation.name} />
-        ))}
+        {conversations?.length &&
+          conversations.map((conversation, index) => {
+            console.log('current convo : ', conversation);
+            if (conversation.isGroupChat) {
+              var chatName = conversation.chatName;
+            } else {
+            }
+
+            if (conversation.latestMessage === undefined) {
+              console.log('No Latest Message with ', conversation.users[1]);
+              return (
+                <div
+                  key={index}
+                  onClick={() => {
+                    console.log('Refresh fired from sidebar');
+                    // dispatch(refreshSidebarFun());
+                  }}
+                >
+                  <div
+                    key={index}
+                    className="conversation-container"
+                    onClick={() => {
+                      navigate(
+                        'chat/' +
+                          conversation._id +
+                          '&' +
+                          conversation.users[0].Name
+                      );
+                    }}
+                    // dispatch change to refresh so as to update chatArea
+                  >
+                    <p className={'con-icon' + (lightMode ? '' : ' dark')}>
+                      {conversation.users[0].Name[0]}
+                    </p>
+                    <p className={'con-title' + (lightMode ? '' : ' dark')}>
+                      {conversation.users[0].Name}
+                    </p>
+
+                    <p className="con-lastMessage">
+                      No previous Messages, click here to start a new chat
+                    </p>
+                    {/* <p className={"con-timeStamp" + (lightTheme ? "" : " dark")}>
+                {conversation.timeStamp}
+              </p> */}
+                  </div>
+                </div>
+              );
+            } else {
+              return (
+                <div
+                  key={index}
+                  className="conversation-container"
+                  onClick={() => {
+                    navigate(
+                      'chat/' +
+                        conversation._id +
+                        '&' +
+                        conversation.users[0].Name
+                    );
+                  }}
+                >
+                  <p className={'con-icon' + (lightMode ? '' : ' dark')}>
+                    {conversation.users[0].Name[0]}
+                  </p>
+                  <p className={'con-title' + (lightMode ? '' : ' dark')}>
+                    {conversation.users[0].Name}
+                  </p>
+
+                  <p className="con-lastMessage">
+                    {conversation.latestMessage.content}
+                  </p>
+                  {/* <p className={"con-timeStamp" + (lightTheme ? "" : " dark")}>
+                {conversation.timeStamp}
+              </p> */}
+                </div>
+              );
+            }
+          })}
       </div>
     </div>
   );
